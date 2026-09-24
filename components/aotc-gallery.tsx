@@ -3,19 +3,78 @@
 import { useMemo, useState } from 'react'
 
 type Tier = 'COMMON' | 'RARE' | 'EPIC' | 'LEGENDARY'
-type Card = { code: string; name: string; series: string; movie: string; tier: Tier; intro: string; image: string; tone: string }
+type Card = {
+  code: string
+  name: string
+  series: string
+  movie: string
+  tier: Tier
+  intro: string
+  image: string
+  source: string
+  tone: string
+}
 
-const characters = [
-  ['Goku','Dragon Ball Z','Dragon Ball Super: Broly','Saiyan warrior who keeps pushing past every limit.'],['Vegeta','Dragon Ball Z','Dragon Ball Super: Super Hero','A proud prince who turns rivalry into power.'],['Naruto Uzumaki','Naruto: Shippuden','The Last: Naruto the Movie','A determined shinobi who never abandons a friend.'],['Sasuke Uchiha','Naruto: Shippuden','Boruto: Naruto the Movie','A precise rival walking the long road to redemption.'],['Monkey D. Luffy','One Piece','One Piece Film: Red','A fearless captain sailing toward the ultimate freedom.'],['Roronoa Zoro','One Piece','One Piece Film: Z','A three-sword swordsman with unbreakable focus.'],['Ichigo Kurosaki','Bleach','Bleach: Hell Verse','A protector who carries every soul he saves.'],['Rukia Kuchiki','Bleach','Bleach: Memories of Nobody','A calm Soul Reaper with a fierce heart.'],['Tanjiro Kamado','Demon Slayer','Demon Slayer: Mugen Train','A kind swordsman who turns compassion into resolve.'],['Nezuko Kamado','Demon Slayer','Demon Slayer: To the Swordsmith Village','A demon protecting humanity with every spark of courage.'],['Gojo Satoru','Jujutsu Kaisen','Jujutsu Kaisen 0','The strongest sorcerer with an effortless grin.'],['Yuji Itadori','Jujutsu Kaisen','Jujutsu Kaisen 0','A warm-hearted fighter facing curses head on.'],['Megumi Fushiguro','Jujutsu Kaisen','Jujutsu Kaisen 0','A quiet tactician who summons shadows to protect others.'],['Edward Elric','Fullmetal Alchemist: Brotherhood','Fullmetal Alchemist: The Sacred Star of Milos','A brilliant alchemist searching for a way to restore his brother.'],['Alphonse Elric','Fullmetal Alchemist: Brotherhood','Fullmetal Alchemist: The Conqueror of Shamballa','A gentle soul whose armor hides a huge heart.'],['Sailor Moon','Sailor Moon Crystal','Sailor Moon Eternal','A cosmic guardian powered by love and moonlight.'],['Levi Ackerman','Attack on Titan','Attack on Titan: Chronicle','Humanity’s sharpest soldier with surgical precision.'],['Mikasa Ackerman','Attack on Titan','Attack on Titan: The Final Chapters','A loyal warrior whose resolve never breaks.'],['Eren Yeager','Attack on Titan','Attack on Titan: Wings of Freedom','A relentless freedom seeker facing an impossible future.'],['Light Yagami','Death Note','Death Note: Relight','A genius who believes the world needs a new judge.'],['L','Death Note','Death Note: Relight 2','A detective whose strange methods hide a razor mind.'],['Spike Spiegel','Cowboy Bebop','Cowboy Bebop: The Movie','A laid-back bounty hunter outrunning his past.'],['Faye Valentine','Cowboy Bebop','Cowboy Bebop: The Movie','A sharp shooter with a mysterious missing history.'],['Shinji Ikari','Neon Genesis Evangelion','The End of Evangelion','A hesitant pilot searching for a reason to stand.'],['Asuka Langley','Neon Genesis Evangelion','Evangelion: 2.0 You Can (Not) Advance','A fierce pilot who refuses to be overlooked.'],['Saber','Fate/stay night','Fate/stay night: Heaven’s Feel','A legendary knight bound by duty and honor.'],['Archer','Fate/stay night','Fate/stay night: Unlimited Blade Works','A guarded hero carrying the weight of ideals.'],['Kirito','Sword Art Online','Sword Art Online the Movie: Ordinal Scale','A dual-wielding player who fights for everyone logged in.'],['Asuna Yuuki','Sword Art Online','Sword Art Online the Movie: Ordinal Scale','A brilliant swordswoman with fearless conviction.'],['Kyojuro Rengoku','Demon Slayer','Demon Slayer: Mugen Train','A flame Hashira whose joy burns brighter than fear.'],['Satoru Gojo','Jujutsu Kaisen','Jujutsu Kaisen 0','A legendary teacher who makes impossible strength look easy.'],['Maki Zenin','Jujutsu Kaisen','Jujutsu Kaisen 0','A weapon specialist who broke free from expectation.'],['Denji','Chainsaw Man','Chainsaw Man: Reze Arc','A chaotic devil hunter dreaming of ordinary happiness.'],['Power','Chainsaw Man','Chainsaw Man: Reze Arc','A loud blood fiend with a surprisingly loyal streak.'],['Soma Yukihira','Food Wars!','Food Wars! The Movie','A fearless chef who treats every plate like a battle.'],['Natsu Dragneel','Fairy Tail','Fairy Tail: Dragon Cry','A fire dragon slayer powered by friendship.'],['Lucy Heartfilia','Fairy Tail','Fairy Tail: Dragon Cry','A celestial mage who writes her own adventure.'],['Asta','Black Clover','Black Clover: Sword of the Wizard King','A magicless knight with impossible volume and courage.'],['Yuno','Black Clover','Black Clover: Sword of the Wizard King','A prodigy wind mage chasing the same crown.'],['Gon Freecss','Hunter x Hunter','Hunter x Hunter: The Last Mission','A bright young hunter driven by curiosity.'],['Killua Zoldyck','Hunter x Hunter','Hunter x Hunter: The Last Mission','A lightning-fast friend escaping a dark upbringing.'],['Hisoka Morow','Hunter x Hunter','Hunter x Hunter: Phantom Rouge','An unpredictable fighter who lives for a challenge.'],['Mob','Mob Psycho 100','Mob Psycho 100: The First Spirits and Such Company Trip','A quiet psychic learning that feelings are strength.'],['Reigen Arataka','Mob Psycho 100','Mob Psycho 100: The First Spirits and Such Company Trip','A smooth mentor with more heart than powers.'],['Saitama','One-Punch Man','One-Punch Man: Road to Hero','A bored hero who ends every fight in one punch.'],['Genos','One-Punch Man','One-Punch Man: Road to Hero','A determined cyborg chasing the power to protect.'],['Izuku Midoriya','My Hero Academia','My Hero Academia: Two Heroes','A notebook-loving hero inheriting a world-changing power.'],['Katsuki Bakugo','My Hero Academia','My Hero Academia: Heroes Rising','A volatile rival who refuses second place.'],['Shoto Todoroki','My Hero Academia','My Hero Academia: World Heroes’ Mission','A disciplined hero balancing two opposite flames.'],['Ochaco Uraraka','My Hero Academia','My Hero Academia: Heroes Rising','A buoyant hero fighting for the people she loves.'],['Kakashi Hatake','Naruto: Shippuden','The Last: Naruto the Movie','A masked mentor with a thousand copied techniques.'],['Itachi Uchiha','Naruto: Shippuden','The Last: Naruto the Movie','A tragic shinobi who bore an impossible secret.'],['Might Guy','Naruto: Shippuden','Road to Ninja: Naruto the Movie','A passionate teacher powered by pure effort.'],['Trafalgar Law','One Piece','One Piece Film: Gold','A surgeon pirate whose calm hides a deadly plan.'],['Nico Robin','One Piece','One Piece Film: Gold','An archaeologist protecting the truth of the world.'],['Sanji','One Piece','One Piece Film: Gold','A chivalrous cook who turns kicks into art.'],['Kenpachi Zaraki','Bleach','Bleach: The DiamondDust Rebellion','A captain who lives for the thrill of battle.'],['Byakuya Kuchiki','Bleach','Bleach: The DiamondDust Rebellion','A noble captain with a storm of petals.'],['Toshiro Hitsugaya','Bleach','Bleach: The DiamondDust Rebellion','A young captain mastering a frozen dragon.'],['Zenitsu Agatsuma','Demon Slayer','Demon Slayer: Mugen Train','A frightened swordsman with thunder hidden inside.'],['Inosuke Hashibira','Demon Slayer','Demon Slayer: Mugen Train','A wild fighter who trusts instinct over rules.'],['Shinobu Kocho','Demon Slayer','Demon Slayer: To the Swordsmith Village','A smiling insect Hashira with precise poison craft.'],['Nobara Kugisaki','Jujutsu Kaisen','Jujutsu Kaisen 0','A stylish sorcerer who nails every curse to the wall.'],['Yuta Okkotsu','Jujutsu Kaisen','Jujutsu Kaisen 0','A gentle student carrying an extraordinary bond.'],['Toji Fushiguro','Jujutsu Kaisen','Jujutsu Kaisen 0','A zero-cursed-energy fighter with monstrous skill.'],['Roy Mustang','Fullmetal Alchemist: Brotherhood','Fullmetal Alchemist: The Sacred Star of Milos','A flame alchemist aiming to change the country.'],['Winry Rockbell','Fullmetal Alchemist: Brotherhood','Fullmetal Alchemist: The Sacred Star of Milos','A gifted mechanic keeping two brothers moving.'],['Greed','Fullmetal Alchemist: Brotherhood','Fullmetal Alchemist: The Conqueror of Shamballa','A rebel homunculus who wants everything and friends too.'],['Misa Amane','Death Note','Death Note: Relight','A devoted idol with a dangerous second sight.'],['Mello','Death Note','Death Note: Relight 2','A driven investigator who refuses to follow the script.'],['Jet Black','Cowboy Bebop','Cowboy Bebop: The Movie','A former cop and steady anchor for the Bebop crew.'],['Vicious','Cowboy Bebop','Cowboy Bebop: The Movie','A cold rival whose ambition cuts like glass.'],['Misato Katsuragi','Neon Genesis Evangelion','The End of Evangelion','A commander balancing jokes, duty, and fear.'],['Rei Ayanami','Neon Genesis Evangelion','The End of Evangelion','A quiet pilot surrounded by questions of identity.'],['Rin Tohsaka','Fate/stay night','Fate/stay night: Heaven’s Feel','A precise mage with a competitive edge.'],['Lancer','Fate/stay night','Fate/stay night: Unlimited Blade Works','A blue spear knight with an unshakable code.'],['Sinon','Sword Art Online II','Sword Art Online the Movie: Ordinal Scale','A cool-headed sniper who finds courage in distance.'],['Klein','Sword Art Online','Sword Art Online the Movie: Ordinal Scale','A loyal guild leader who keeps the party together.'],['Erwin Smith','Attack on Titan','Attack on Titan: Chronicle','A commander who wagers everything on one charge.'],['Hange Zoe','Attack on Titan','Attack on Titan: Chronicle','A brilliant scout fascinated by every titan mystery.'],['Momo Yaoyorozu','My Hero Academia','My Hero Academia: Two Heroes','A tactical creator whose preparation is her superpower.'],['All Might','My Hero Academia','My Hero Academia: Two Heroes','The symbol of peace with a smile that inspires millions.'],['Rukia Kuchiki','Bleach','Bleach: Memories of Nobody','A disciplined Soul Reaper finding her own voice.'],['Orihime Inoue','Bleach','Bleach: Memories of Nobody','A compassionate healer with reality-bending faith.'],['Mavis Vermillion','Fairy Tail','Fairy Tail: Dragon Cry','A legendary strategist with a childlike spark.'],['Gajeel Redfox','Fairy Tail','Fairy Tail: Dragon Cry','An iron dragon slayer with a rough exterior.'],['Yami Sukehiro','Black Clover','Black Clover: Sword of the Wizard King','A dark magic captain who cuts through limits.'],['Noelle Silva','Black Clover','Black Clover: Sword of the Wizard King','A royal water mage learning to trust her power.'],['Kurapika','Hunter x Hunter','Hunter x Hunter: The Last Mission','A focused chain user seeking justice for his clan.'],['Leorio Paradinight','Hunter x Hunter','Hunter x Hunter: The Last Mission','A future doctor with a huge voice and bigger heart.'],['Tatsumaki','One-Punch Man','One-Punch Man: Road to Hero','A tiny esper with city-shaking power.'],['Fubuki','One-Punch Man','One-Punch Man: Road to Hero','A stylish psychic leader building her own team.'],['Maki Oze','Fire Force','Fire Force: Enbu no Sho','A firefighter with an iron will and a gentle side.'],['Arthur Boyle','Fire Force','Fire Force: Enbu no Sho','A knight in his own mind with plasma at his blade.'],['Anya Forger','Spy x Family','Spy x Family Code: White','A tiny telepath determined to keep her family together.'],['Loid Forger','Spy x Family','Spy x Family Code: White','A master spy learning the hardest mission is family.'],['Yor Forger','Spy x Family','Spy x Family Code: White','An elegant assassin with unstoppable protective instinct.'],['Violet Evergarden','Violet Evergarden','Violet Evergarden: The Movie','A former soldier learning to translate feeling into words.'],['Kyo Sohma','Fruits Basket','Fruits Basket: Prelude','A hot-headed cat spirit learning to accept love.'],['Tohru Honda','Fruits Basket','Fruits Basket: Prelude','A kind soul who makes every broken home warmer.'],['Holo','Spice and Wolf','Spice and Wolf: The Movie','A wise wolf deity with a merchant’s sharp wit.'],['Lelouch Lamperouge','Code Geass','Code Geass: Lelouch of the Re;surrection','A strategist whose command can reshape an empire.'],['C.C.','Code Geass','Code Geass: Lelouch of the Re;surrection','An immortal mystery with a taste for pizza.']
+// These are real characters. Artwork is loaded from the two PNG galleries requested
+// by the project brief; check each site's license before publishing commercially.
+const characters: Omit<Card, 'code'>[] = [
+  {
+    name: 'Goku',
+    series: 'Dragon Ball Z',
+    movie: 'Dragon Ball Super: Broly',
+    tier: 'LEGENDARY',
+    intro: 'A Saiyan warrior whose hunger for a stronger challenge never ends.',
+    image: 'https://pngdownload.io/images/dragon-ball-z-goku-ultra-instinct-png-14.png',
+    source: 'https://pngdownload.io/image_tag/anime/',
+    tone: 'gold',
+  },
+  {
+    name: 'Naruto Uzumaki',
+    series: 'Naruto',
+    movie: 'The Last: Naruto the Movie',
+    tier: 'EPIC',
+    intro: 'The spirited ninja who turned loneliness into a promise to protect everyone.',
+    image: 'https://pngdownload.io/images/naruto-uzumaki-png-1.png',
+    source: 'https://pngdownload.io/image_tag/anime/',
+    tone: 'coral',
+  },
+  {
+    name: 'Monkey D. Luffy',
+    series: 'One Piece',
+    movie: 'One Piece Film: Red',
+    tier: 'LEGENDARY',
+    intro: 'The rubber-powered captain sailing toward the greatest treasure in the world.',
+    image: 'https://pngdownload.io/images/one-piece-luffy-png-13.png',
+    source: 'https://pngdownload.io/image_tag/anime/',
+    tone: 'cyan',
+  },
+  {
+    name: 'Sailor Moon',
+    series: 'Sailor Moon',
+    movie: 'Sailor Moon Eternal',
+    tier: 'RARE',
+    intro: 'Usagi Tsukino becomes a cosmic guardian powered by love, friendship, and courage.',
+    image: 'https://pngdownload.io/images/sailor-moon-transparent-png-1.png',
+    source: 'https://pngdownload.io/image_tag/anime/',
+    tone: 'violet',
+  },
+  {
+    name: 'Satoru Gojo',
+    series: 'Jujutsu Kaisen',
+    movie: 'Jujutsu Kaisen 0',
+    tier: 'EPIC',
+    intro: 'The limitless sorcerer who stands between ordinary people and cursed spirits.',
+    image: 'https://pngarts.com/files/7/Satoru-Gojo-PNG-Photo.png',
+    source: 'https://www.pngarts.com/explore/tag/anime-character',
+    tone: 'cyan',
+  },
 ]
 
-const imagePool = ['/cards/kaia.png','/cards/nyx.png','/cards/orin.png','/cards/sol.png']
-const tones = ['coral','violet','cyan','gold']
-const tiers: Tier[] = ['COMMON','RARE','EPIC','LEGENDARY']
-
-const cards: Card[] = characters.map(([name, series, movie, intro], index) => ({
-  code: `${String.fromCharCode(65 + index % 26)}${(index * 37 + 11).toString(36).toUpperCase().slice(-2)}${String.fromCharCode(65 + (index * 7) % 26)}${(index * 13 + 4).toString(36).toUpperCase().slice(-1)}`,
-  name, series, movie, intro, image: imagePool[index % imagePool.length], tone: tones[index % tones.length], tier: tiers[index % tiers.length]\n})).slice(0, 100)
+const cards: Card[] = characters.map((character, index) => ({
+  ...character,
+  code: `A${String(index + 1).padStart(2, '0')}${character.name.replace(/[^A-Z]/gi, '').slice(0, 2).toUpperCase()}`,
+}))
+const tiers: Tier[] = ['COMMON', 'RARE', 'EPIC', 'LEGENDARY']
 
 export function AotcGallery() {
   const [selected, setSelected] = useState<Card | null>(null)
@@ -24,25 +83,36 @@ export function AotcGallery() {
 
   return <main className="card-page">
     <header className="card-header">
-      <div><span className="eyebrow">AOTC / ORIGINAL ANIME ARCHIVE</span><h1>ANIME CHARACTER CARDS</h1><p>100 real anime characters, series, movies, and short intros in one public fan collection.</p></div>
+      <div>
+        <span className="eyebrow">AOTC / REAL CHARACTER ARCHIVE</span>
+        <h1>ANIME CHARACTER CARDS</h1>
+        <p>Collectible cards featuring real anime characters and artwork from the requested PNG galleries.</p>
+      </div>
       <strong>{cards.length} CARDS</strong>
     </header>
     <nav className="tier-filter" aria-label="Filter cards by tier">
       {(['ALL', ...tiers] as const).map((tier) => <button key={tier} className={filter === tier ? 'active' : ''} onClick={() => setFilter(tier)}>{tier}</button>)}
     </nav>
     <section className="card-grid" aria-label="Anime character card collection">
-      {filteredCards.map((card) => <button className={`visual-card tier-${card.tier.toLowerCase()}`} key={card.code} onClick={() => setSelected(card)} aria-label={`${card.name}, ${card.series}, ${card.code}`}>
+      {filteredCards.map((card) => <button className={`visual-card tier-${card.tier.toLowerCase()}`} key={card.code} onClick={() => setSelected(card)} aria-label={`${card.name}, ${card.series}, view details`}>
         <div className={`card-poster ${card.tone}`}>
-          <span className="scanline" /><img src={card.image} alt={`${card.name} character artwork`} />
+          <span className="scanline" />
+          <img src={card.image} alt={`${card.name} character artwork`} loading="lazy" />
           <div className="card-top"><span>AOTC</span><b>{card.tier}</b></div>
           <div className="card-copy"><small>{card.series}</small><strong>{card.name}</strong><p>{card.intro}</p><i>{card.code}</i></div>
         </div>
       </button>)}
     </section>
-    {selected && <div className="detail-backdrop" onClick={() => setSelected(null)}><article className={`card-detail ${selected.tone}`} role="dialog" aria-modal="true" aria-labelledby="detail-title" onClick={(event) => event.stopPropagation()}>
-      <button className="detail-close" onClick={() => setSelected(null)} aria-label="Close card details">Close</button><img src={selected.image} alt={`${selected.name} character artwork`} /><span className="detail-code">{selected.code}</span><span className="detail-tier">{selected.tier}</span><h2 id="detail-title">{selected.name}</h2><p className="detail-intro">{selected.intro}</p><dl><div><dt>Series</dt><dd>{selected.series}</dd></div><div><dt>Anime movie</dt><dd>{selected.movie}</dd></div></dl>
-    </article></div>}
+    {selected && <div className="detail-backdrop" onClick={() => setSelected(null)}>
+      <article className={`card-detail ${selected.tone}`} role="dialog" aria-modal="true" aria-labelledby="detail-title" onClick={(event) => event.stopPropagation()}>
+        <button className="detail-close" onClick={() => setSelected(null)} aria-label="Close card details">Close</button>
+        <img src={selected.image} alt={`${selected.name} character artwork`} />
+        <span className="eyebrow">{selected.code} / {selected.tier}</span>
+        <h2 id="detail-title">{selected.name}</h2>
+        <p><b>{selected.series}</b> · {selected.movie}</p>
+        <p>{selected.intro}</p>
+        <a href={selected.source} target="_blank" rel="noreferrer">View image source</a>
+      </article>
+    </div>}
   </main>
 }
-
-// Artwork currently uses the archive assets already in this project. Replace them with properly licensed PNGs from the provided sources before publishing publicly.
